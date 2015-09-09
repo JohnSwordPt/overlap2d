@@ -22,6 +22,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.utils.Array;
 import com.uwsoft.editor.Overlap2DFacade;
 import com.uwsoft.editor.factory.ItemFactory;
+import com.uwsoft.editor.renderer.components.MainItemComponent;
 import com.uwsoft.editor.renderer.components.NodeComponent;
 import com.uwsoft.editor.renderer.components.ZIndexComponent;
 import com.uwsoft.editor.renderer.utils.ComponentRetriever;
@@ -54,6 +55,12 @@ public class CreateItemCommand extends EntityModifyRevertableCommand {
 
         Overlap2DFacade.getInstance().sendNotification(ItemFactory.NEW_ITEM_ADDED, entity);
 
+		  // FIX: objects visibility according to object's layer visibility (JohnSword)
+		  if(Sandbox.getInstance().getSelectedLayer()!=null) {
+			  MainItemComponent mainItemComponent = ComponentRetriever.get(entity, MainItemComponent.class);
+			  mainItemComponent.visible = Sandbox.getInstance().getSelectedLayer().isVisible;
+		  }
+		  
         // select newly created item
         // get current selection
         HashSet<Entity> previousSelection = new HashSet<>(Sandbox.getInstance().getSelector().getSelectedItems());
