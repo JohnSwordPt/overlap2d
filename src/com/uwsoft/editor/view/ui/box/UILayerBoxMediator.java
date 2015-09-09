@@ -37,6 +37,7 @@ import com.uwsoft.editor.view.stage.Sandbox;
 import com.uwsoft.editor.factory.ItemFactory;
 import com.uwsoft.editor.proxy.SceneDataManager;
 import com.uwsoft.editor.renderer.components.LayerMapComponent;
+import com.uwsoft.editor.renderer.components.MainItemComponent;
 import com.uwsoft.editor.renderer.components.NodeComponent;
 import com.uwsoft.editor.renderer.data.LayerItemVO;
 import com.uwsoft.editor.renderer.utils.ComponentRetriever;
@@ -280,7 +281,11 @@ public class UILayerBoxMediator extends PanelMediator<UILayerBox> {
             Entity entity = nodeComponent.children.get(i);
             ZIndexComponent childZComponent = ComponentRetriever.get(entity, ZIndexComponent.class);
             if(childZComponent.layerName.equals(layerName)){
+					LayerItemVO entityVis = EntityUtils.getEntityLayer(entity);
+					Boolean wtf = entityVis.isVisible;
                 EntityUtils.getEntityLayer(entity).isVisible = setVisible;
+				 MainItemComponent mi = ComponentRetriever.get(entity, MainItemComponent.class);
+				 mi.visible = setVisible;
             }
         }
     }
@@ -322,10 +327,17 @@ public class UILayerBoxMediator extends PanelMediator<UILayerBox> {
         layers = layerMapComponent.getLayers();
 
         viewComponent.clearItems();
-
+		  
+		    // FIX: objects visibility according to object's layer visibility (JohnSword)
         for (int i = (layers.size()-1); i >=0; i--) {
-            viewComponent.addItem(layers.get(i));
+			  LayerItemVO layer = layers.get(i);
+            viewComponent.addItem(layer);
+				if(layer.isVisible) {
+					int idx = (layers.size() - i) - 1;
+					setEntityVisibilityByLayer(viewComponent.getLayer(idx), true);
+				}
         }
+		  
     }
 
     public int getCurrentSelectedLayerIndex() {
@@ -336,4 +348,8 @@ public class UILayerBoxMediator extends PanelMediator<UILayerBox> {
         if(viewComponent.getCurrentSelectedLayerIndex() == -1) return null;
         return layers.get(viewComponent.getCurrentSelectedLayerIndex()).layerName;
     }
+	 
+	 public LayerItemVO getCurrentSelectedLayer() {
+		 return layers.get(getCurrentSelectedLayerIndex());
+	 }
 }

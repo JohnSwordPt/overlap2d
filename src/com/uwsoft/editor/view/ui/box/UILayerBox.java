@@ -140,6 +140,11 @@ public class UILayerBox extends UICollapsibleBox {
     public UILayerItem getCurrentSelectedLayer() {
         return rows.get(rows.size-1-currentSelectedLayerIndex).uiLayerItem;
     }
+	 
+	  // get the UILayerItem (JohnSword)
+	 public UILayerItem getLayer(int idx) {
+		 return rows.get(idx).getUiLayerItem();
+	 }
 
     public void clearItems() {
         layersTable.clear();
